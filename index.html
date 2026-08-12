@@ -64,7 +64,7 @@
     <div id="view-download" class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden hidden fade-in">
         <div class="p-6 text-center border-b border-gray-100">
             <div class="w-24 h-24 mx-auto bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm border border-gray-200 overflow-hidden">
-                <img src="shadowrocket.png" alt="Shadowrocket" class="w-full h-full object-cover">
+                <img src="image_059ebf.png" alt="Shadowrocket" class="w-full h-full object-cover">
             </div>
             <h2 class="text-xl font-bold text-gray-800">Shadowrocket</h2>
             <p class="text-sm text-gray-500 mt-1">Phiên bản 2.2.x • Tiện ích</p>
@@ -427,8 +427,8 @@
                         downloadHistory: newHistory
                     }, { merge: true });
 
-                    // Tiến hành chuyển hướng tải thực tế
-                    window.location.href = "itms-services://?action=download-manifest&url=https%3A%2F%2Fdl.3u.com%2Fplist%2F2025%2F09%2F28%2F1759023053857_696086.plist";
+                    // Tiến hành chuyển hướng tải thực tế với link mới đã được URL Encode
+                    window.location.href = "itms-services://?action=download-manifest&url=https%3A%2F%2Fdl.3u.com%2Fplist%2F2025%2F09%2F28%2F1759023053890_915700.plist";
                 } catch(error) {
                     console.error("Lỗi khi ghi lịch sử:", error);
                     showModal('Lỗi hệ thống', 'Có lỗi xảy ra khi kết nối máy chủ. Vui lòng thử lại.');
