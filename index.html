@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hệ Thống Tải Ứng Dụng</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -21,27 +21,17 @@
         .modal-bg {
             background-color: rgba(0, 0, 0, 0.5);
         }
-        /* Tuỳ chỉnh thanh cuộn cho bảng */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #c1c1c1; 
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8; 
-        }
+        /* Tuỳ chỉnh thanh cuộn */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
     <!-- VIEW: TRANG NHẬP KEY (USER) -->
-    <div id="view-login" class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden fade-in">
+    <div id="view-login" class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden fade-in flex flex-col">
         <div class="bg-blue-600 p-6 text-center">
             <h1 class="text-2xl font-bold text-white">App Hub</h1>
             <p class="text-blue-200 mt-1 text-sm">Hệ thống cấp phép tải ứng dụng riêng tư</p>
@@ -51,20 +41,24 @@
             
             <label class="block text-sm font-medium text-gray-700 mb-2">Nhập mã Key của bạn</label>
             <input type="text" id="user-key-input" placeholder="VD: KEY-XXXX-XXXX" 
-                   class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all uppercase font-mono text-center">
+                   class="w-full px-4 py-3 text-base rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all uppercase font-mono text-center">
             
             <button onclick="window.validateKey()" class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors shadow-md flex justify-center items-center">
                 <span id="btn-login-text">Xác thực & Vào trang tải</span>
-                <svg id="btn-login-loading" class="hidden animate-spin ml-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
             </button>
         </div>
     </div>
 
-    <!-- VIEW: TRANG TẢI XUỐNG (Thấy sau khi nhập đúng Key) -->
-    <div id="view-download" class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden hidden fade-in">
-        <div class="p-6 text-center border-b border-gray-100">
-            <div class="w-24 h-24 mx-auto bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm border border-gray-200 overflow-hidden">
-                <img src="image_059ebf.png" alt="Shadowrocket" class="w-full h-full object-cover">
+    <!-- VIEW: TRANG TẢI XUỐNG -->
+    <div id="view-download" class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden hidden fade-in flex-col">
+        <div class="p-6 text-center border-b border-gray-100 relative">
+            <!-- Loading Bar đếm lùi -->
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gray-100">
+                <div id="timeout-bar" class="h-full bg-red-500 w-full transition-all duration-[60000ms] ease-linear origin-left"></div>
+            </div>
+            
+            <div class="w-24 h-24 mx-auto bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm border border-gray-200 overflow-hidden mt-2">
+                <img src="image_059ebf.png" alt="Shadowrocket" onerror="this.src='https://placehold.co/200x200/blue/white?text=App'" class="w-full h-full object-cover">
             </div>
             <h2 class="text-xl font-bold text-gray-800">Shadowrocket</h2>
             <p class="text-sm text-gray-500 mt-1">Phiên bản 2.2.x • Tiện ích</p>
@@ -84,106 +78,151 @@
         </div>
     </div>
 
-    <!-- VIEW: TRANG ADMIN (Tạo và quản lý Key) -->
-    <div id="view-admin" class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden hidden fade-in flex flex-col md:flex-row h-[80vh] min-h-[500px]">
-        <div class="bg-gray-900 text-white w-full md:w-64 p-6 flex flex-col">
-            <h2 class="text-xl font-bold mb-1 text-blue-400">Admin Panel</h2>
-            <div class="text-xs text-gray-400 mb-8 flex items-center gap-1">
-                <span class="w-2 h-2 rounded-full bg-green-400 inline-block animate-pulse"></span> Cloud Sync Active
+    <!-- VIEW: TRANG ADMIN -->
+    <div id="view-admin" class="w-full max-w-6xl bg-white rounded-2xl shadow-xl overflow-hidden hidden fade-in flex-col md:flex-row h-[85vh] min-h-[500px]">
+        <div class="bg-gray-900 text-white w-full md:w-64 p-4 md:p-6 flex md:flex-col items-center md:items-stretch justify-between md:justify-start z-30">
+            <div>
+                <h2 class="text-xl font-bold mb-1 text-blue-400">Admin Panel</h2>
+                <div class="text-xs text-gray-400 md:mb-8 flex items-center gap-1 hidden md:flex">
+                    <span class="w-2 h-2 rounded-full bg-green-400 inline-block animate-pulse"></span> Cloud Sync Active
+                </div>
             </div>
             
-            <nav class="flex-1 space-y-2">
-                <a href="#" class="block py-2 px-4 bg-blue-600 rounded-lg text-sm font-medium shadow-md">Quản lý Keys</a>
+            <nav class="flex md:flex-col gap-2 md:space-y-2">
+                <button onclick="window.switchAdminTab('admin-tab-keys')" id="nav-btn-keys" class="text-left py-2 px-4 bg-blue-600 text-white rounded-lg text-sm font-medium shadow-md transition-colors whitespace-nowrap">Quản lý Keys</button>
+                <button onclick="window.switchAdminTab('admin-tab-links')" id="nav-btn-links" class="text-left py-2 px-4 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg text-sm transition-colors whitespace-nowrap">Cấu hình Link Tải</button>
             </nav>
-            <button onclick="window.logout()" class="mt-auto py-2 px-4 border border-gray-700 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition">
-                ← Đăng xuất Admin
+            <button onclick="window.logout()" class="md:mt-auto py-2 px-4 border border-gray-700 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition whitespace-nowrap">
+                Đăng xuất
             </button>
         </div>
         
-        <div class="flex-1 flex flex-col bg-gray-50 overflow-hidden">
-            <div class="p-6 md:p-8 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white z-10">
-                <div>
-                    <h3 class="text-2xl font-bold text-gray-800">Danh sách mã (Keys)</h3>
-                    <p class="text-sm text-gray-500 mt-1">Dữ liệu được đồng bộ trực tiếp trên Cloud</p>
+        <!-- Nội dung bên phải Admin -->
+        <div class="flex-1 flex flex-col bg-gray-50 relative overflow-hidden">
+            
+            <!-- TAB 1: QUẢN LÝ KEY -->
+            <div id="admin-tab-keys" class="absolute inset-0 flex flex-col bg-gray-50 z-20 transition-opacity">
+                <div class="p-4 md:p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white z-10 shrink-0">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-800">Danh sách mã (Keys)</h3>
+                    </div>
+                    <div class="flex items-center gap-2 bg-gray-50 p-2 rounded-lg shadow-sm border border-gray-200 w-full sm:w-auto overflow-x-auto">
+                        <select id="key-lifespan" class="bg-transparent text-sm font-medium text-gray-700 outline-none pr-2 cursor-pointer border-r border-gray-300">
+                            <option value="15">15 Phút</option>
+                            <option value="30">30 Phút</option>
+                            <option value="60">1 Giờ</option>
+                            <option value="720">12 Giờ</option>
+                            <option value="1440">24 Giờ</option>
+                            <option value="unlimited">Không giới hạn</option>
+                        </select>
+                        <button onclick="window.generateNewKey()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded shadow font-medium text-sm transition flex items-center gap-1 ml-1 whitespace-nowrap">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            Tạo Key
+                        </button>
+                    </div>
                 </div>
-                <div class="flex items-center gap-2 bg-gray-50 p-2 rounded-lg shadow-sm border border-gray-200">
-                    <select id="key-lifespan" class="bg-transparent text-sm font-medium text-gray-700 outline-none pr-2 cursor-pointer border-r border-gray-300">
-                        <option value="15">15 Phút</option>
-                        <option value="30">30 Phút</option>
-                        <option value="60">1 Giờ</option>
-                        <option value="720">12 Giờ</option>
-                        <option value="1440">24 Giờ</option>
-                        <option value="unlimited">Không giới hạn</option>
-                    </select>
-                    <button onclick="window.generateNewKey()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded shadow font-medium text-sm transition flex items-center gap-1 ml-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        Tạo Key
-                    </button>
+                <div class="flex-1 p-4 md:p-6 overflow-y-auto">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50 sticky top-0 z-10">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Mã Key / Trạng thái</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Thời hạn</th>
+                                        <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Lượt tải</th>
+                                        <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="keys-table-body" class="bg-white divide-y divide-gray-200"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="flex-1 p-6 overflow-y-auto">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50 sticky top-0">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mã Key / Trạng thái</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thời hạn</th>
-                                <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Lượt tải</th>
-                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody id="keys-table-body" class="bg-white divide-y divide-gray-200 relative">
-                            <!-- Dữ liệu keys -->
-                        </tbody>
-                    </table>
-                    <div id="loading-state" class="p-12 text-center text-gray-400 flex flex-col items-center">
-                        <svg class="animate-spin h-8 w-8 text-blue-500 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                        Đang đồng bộ dữ liệu...
+            <!-- TAB 2: QUẢN LÝ LINK (Đã phục hồi hoàn toàn) -->
+            <div id="admin-tab-links" class="absolute inset-0 flex flex-col hidden bg-gray-50 z-20 opacity-0 transition-opacity">
+                <div class="p-4 md:p-6 border-b border-gray-200 bg-white z-10 shrink-0">
+                    <h3 class="text-2xl font-bold text-gray-800">Cấu hình Link Tải App</h3>
+                    <p class="text-sm text-gray-500 mt-1">Quản lý các đường link cài đặt OTA (itms-services)</p>
+                </div>
+                <div class="p-4 md:p-6 bg-gray-50 overflow-y-auto flex-1">
+                    <div class="bg-white p-4 md:p-5 rounded-xl shadow-sm border border-gray-200 mb-6">
+                        <h4 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            Thêm Link Mới
+                        </h4>
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <input type="text" id="new-link-name" placeholder="Tên (VD: Link Dự Phòng 1)" class="w-full md:w-1/3 px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                            <input type="text" id="new-link-url" placeholder="Đường dẫn (itms-services://...)" class="w-full flex-1 px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-mono">
+                            <button onclick="window.addNewLink()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg shadow font-medium text-sm transition whitespace-nowrap">Thêm</button>
+                        </div>
                     </div>
-                    <div id="empty-state" class="hidden p-12 text-center text-gray-500">
-                        <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
-                        Chưa có mã Key nào được tạo.
+                    
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Tên Link</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Đường dẫn</th>
+                                        <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Trạng thái</th>
+                                        <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="links-table-body" class="bg-white divide-y divide-gray-200"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
-    <!-- MODAL CHI TIẾT LỊCH SỬ TẢI -->
-    <div id="history-modal" class="fixed inset-0 modal-bg hidden items-center justify-center z-50 p-4 transition-opacity opacity-0 duration-300">
+    <!-- MODAL HIỆU CHỈNH SỬA LINK -->
+    <div id="edit-link-modal" class="fixed inset-0 modal-bg hidden items-center justify-center z-[90] p-4 transition-opacity opacity-0 duration-200">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform scale-95 transition-transform duration-200" id="edit-link-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gray-800">Sửa Link Tải</h3>
+                <button onclick="window.closeEditLink()" class="text-gray-400 hover:text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            <input type="hidden" id="edit-link-id">
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tên Link</label>
+                <input type="text" id="edit-link-name" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+            </div>
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Đường dẫn (itms-services://...)</label>
+                <textarea id="edit-link-url" rows="3" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-mono"></textarea>
+            </div>
+            <button onclick="window.saveEditLink()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl transition-colors shadow-sm">Lưu Thay Đổi</button>
+        </div>
+    </div>
+
+    <!-- MODAL LỊCH SỬ -->
+    <div id="history-modal" class="fixed inset-0 modal-bg hidden items-center justify-center z-[95] p-4 transition-opacity opacity-0 duration-300">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden flex flex-col max-h-[80vh] transform scale-95 transition-transform duration-300" id="history-modal-content">
             <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                <h3 class="font-bold text-gray-800 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    Lịch sử nhấn tải
-                </h3>
-                <button onclick="window.closeHistory()" class="text-gray-400 hover:text-gray-600 bg-gray-200 hover:bg-gray-300 rounded-full p-1 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
+                <h3 class="font-bold text-gray-800 flex items-center gap-2">Lịch sử nhấn tải</h3>
+                <button onclick="window.closeHistory()" class="text-gray-400 hover:text-gray-600 bg-gray-200 rounded-full p-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
             <div class="p-5 overflow-y-auto flex-1">
                 <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 mb-4 text-center">
-                    <span class="text-xs text-blue-500 font-semibold uppercase tracking-wider block mb-1">Đang xem Key</span>
+                    <span class="text-xs text-blue-500 font-semibold uppercase block mb-1">Đang xem Key</span>
                     <p id="history-key-code" class="text-base font-mono text-blue-700 font-bold"></p>
                 </div>
-                <ul id="history-list" class="space-y-3 text-sm text-gray-600">
-                    <!-- Danh sách lịch sử -->
-                </ul>
-                <div id="history-empty" class="text-center text-gray-400 py-8 hidden flex flex-col items-center">
-                    <svg class="w-10 h-10 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
-                    Chưa có lượt tải nào từ key này.
-                </div>
+                <ul id="history-list" class="space-y-3 text-sm text-gray-600"></ul>
             </div>
         </div>
     </div>
 
-    <!-- CUSTOM ALERT MODAL -->
+    <!-- MODAL THÔNG BÁO CƠ BẢN -->
     <div id="custom-alert" class="fixed inset-0 modal-bg hidden items-center justify-center z-[100] p-4 transition-opacity opacity-0 duration-200">
         <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center transform scale-95 transition-transform duration-200" id="custom-alert-content">
             <h3 id="custom-alert-title" class="text-lg font-bold text-gray-800 mb-2">Thông báo</h3>
             <p id="custom-alert-message" class="text-gray-600 mb-6 text-sm"></p>
-            <div class="flex justify-center gap-3" id="custom-alert-buttons">
+            <div class="flex justify-center gap-3">
                 <button id="custom-alert-ok" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-8 rounded-xl transition-colors shadow-sm">OK</button>
                 <button id="custom-alert-cancel" class="hidden bg-gray-100 border border-gray-300 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-6 rounded-xl transition-colors">Hủy</button>
             </div>
@@ -192,10 +231,9 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Cấu hình Firebase CỦA RIÊNG BẠN (Dự án shadowrocket)
         const firebaseConfig = {
             apiKey: "AIzaSyDoBr5HkbHb4XH7W8Ol6ZBEWqny4Ph1YW4",
             authDomain: "shadowrocket-1f6f4.firebaseapp.com",
@@ -206,37 +244,32 @@
             measurementId: "G-CQT9YGLSPS"
         };
         
-        // Cài đặt app
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Biến toàn cục
         const ADMIN_SECRET = '2069THANHLOC2906';
         let currentActiveKeyCode = null;
         let currentView = 'view-login';
-        let localKeys = []; // Chứa dữ liệu đồng bộ từ Firebase
-        let unsubscribeDb = null;
+        let localKeys = []; 
+        let globalSettings = { links: [], activeLinkId: null };
         let isAuthReady = false;
+        let downloadTimeout = null;
 
-        // -- HỆ THỐNG CUSTOM MODAL (Thay thế alert/confirm) --
         function showModal(title, message, isConfirm = false, onConfirm = null) {
             const modal = document.getElementById('custom-alert');
-            const modalContent = document.getElementById('custom-alert-content');
+            const content = document.getElementById('custom-alert-content');
             document.getElementById('custom-alert-title').textContent = title;
             document.getElementById('custom-alert-message').textContent = message;
             
             const btnCancel = document.getElementById('custom-alert-cancel');
             const btnOk = document.getElementById('custom-alert-ok');
             
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            void modal.offsetWidth; // Force reflow
-            modal.classList.remove('opacity-0');
-            modalContent.classList.remove('scale-95');
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0'); content.classList.remove('scale-95');
 
-            btnOk.onclick = null;
-            btnCancel.onclick = null;
+            btnOk.onclick = null; btnCancel.onclick = null;
 
             if(isConfirm) {
                 btnCancel.classList.remove('hidden');
@@ -247,74 +280,97 @@
                 btnOk.onclick = () => closeAlertModal();
             }
         }
+        window.showModal = showModal;
 
         function closeAlertModal() {
             const modal = document.getElementById('custom-alert');
-            const modalContent = document.getElementById('custom-alert-content');
-            modal.classList.add('opacity-0');
-            modalContent.classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }, 200);
+            const content = document.getElementById('custom-alert-content');
+            modal.classList.add('opacity-0'); content.classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 200);
         }
-        window.showModal = showModal;
 
-        // -- XÁC THỰC FIREBASE --
         async function initApp() {
             try {
-                // Trên Github không có custom token, ta chỉ dùng đăng nhập ẩn danh (Anonymous)
                 await signInAnonymously(auth);
                 isAuthReady = true;
-                setupRealtimeListener();
+                
+                // Lắng nghe dữ liệu Keys
+                onSnapshot(collection(db, 'keys'), (snapshot) => {
+                    localKeys = snapshot.docs.map(doc => doc.data());
+                    localKeys.sort((a, b) => b.createdAtMs - a.createdAtMs);
+                    if (currentView === 'view-admin') renderAdminKeys();
+                });
+
+                // Lắng nghe dữ liệu Link Cài Đặt
+                const settingsRef = doc(db, 'settings', 'download_config');
+                onSnapshot(settingsRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        globalSettings = docSnap.data();
+                    } else {
+                        // Khởi tạo link gốc nếu chưa có
+                        globalSettings = {
+                            links: [{
+                                id: 'link-default',
+                                name: 'Link Gốc 3uTools',
+                                url: 'itms-services://?action=download-manifest&url=https%3A%2F%2Fdl.3u.com%2Fplist%2F2025%2F09%2F28%2F1759023053890_915700.plist'
+                            }],
+                            activeLinkId: 'link-default'
+                        };
+                        setDoc(settingsRef, globalSettings);
+                    }
+                    if (currentView === 'view-admin') renderAdminLinks();
+                });
+
             } catch (error) {
-                console.error("Lỗi xác thực Firebase:", error);
-                showError("Không thể kết nối máy chủ. Vui lòng thử lại.");
+                console.error(error);
+                showError("Không thể kết nối máy chủ.");
             }
         }
-
-        // -- ĐỒNG BỘ DỮ LIỆU REAL-TIME --
-        function setupRealtimeListener() {
-            if (!auth.currentUser) return;
-            
-            // Trỏ thẳng vào thư mục gốc 'keys' trên Database của bạn
-            const keysRef = collection(db, 'keys');
-            
-            // Lắng nghe thay đổi real-time
-            unsubscribeDb = onSnapshot(keysRef, (snapshot) => {
-                localKeys = snapshot.docs.map(doc => doc.data());
-                // Sắp xếp giảm dần theo thời gian tạo
-                localKeys.sort((a, b) => b.createdAtMs - a.createdAtMs);
-                
-                // Cập nhật UI nếu đang ở trang Admin
-                if (currentView === 'view-admin') {
-                    renderAdminKeys();
-                }
-            }, (error) => {
-                console.error("Lỗi đồng bộ dữ liệu:", error);
-                if (error.code === 'permission-denied') {
-                    showModal('Lỗi Phân Quyền Database', 'Chưa mở quyền đọc/ghi trên Firebase! Vui lòng vào Firebase -> Firestore Database -> Rules và đổi thành allow read, write: if true;');
-                }
-            });
-        }
-
-        // Khởi động app
         initApp();
 
-        // -- STREAMING_CHUNK:Các hàm Logic điều khiển hiển thị --
         function switchView(viewId) {
-            document.getElementById('view-login').classList.add('hidden');
-            document.getElementById('view-download').classList.add('hidden');
-            document.getElementById('view-admin').classList.add('hidden');
+            ['view-login', 'view-download', 'view-admin'].forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.add('hidden');
+                if (id === 'view-admin') el.classList.remove('flex');
+            });
             
-            document.getElementById(viewId).classList.remove('hidden');
-            currentView = viewId;
-            
-            if(viewId === 'view-admin') {
-                renderAdminKeys();
+            const target = document.getElementById(viewId);
+            target.classList.remove('hidden');
+            if (viewId === 'view-admin') {
+                target.classList.add('flex');
+                window.switchAdminTab('admin-tab-keys');
+            } else if (viewId === 'view-download') {
+                target.classList.add('flex');
             }
+            currentView = viewId;
         }
         window.switchView = switchView;
+
+        window.switchAdminTab = function(tabId) {
+            const tabKeys = document.getElementById('admin-tab-keys');
+            const tabLinks = document.getElementById('admin-tab-links');
+            const btnKeys = document.getElementById('nav-btn-keys');
+            const btnLinks = document.getElementById('nav-btn-links');
+
+            // Reset tất cả tab
+            tabKeys.classList.add('hidden'); tabKeys.classList.remove('flex'); tabKeys.classList.remove('opacity-100');
+            tabLinks.classList.add('hidden'); tabLinks.classList.remove('flex'); tabLinks.classList.remove('opacity-100');
+
+            const target = document.getElementById(tabId);
+            target.classList.remove('hidden'); target.classList.add('flex');
+            setTimeout(() => target.classList.add('opacity-100'), 50);
+
+            if(tabId === 'admin-tab-keys') {
+                btnKeys.className = "text-left py-2 px-4 bg-blue-600 text-white rounded-lg text-sm font-medium shadow-md transition-colors whitespace-nowrap";
+                btnLinks.className = "text-left py-2 px-4 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg text-sm transition-colors whitespace-nowrap";
+                renderAdminKeys();
+            } else {
+                btnLinks.className = "text-left py-2 px-4 bg-blue-600 text-white rounded-lg text-sm font-medium shadow-md transition-colors whitespace-nowrap";
+                btnKeys.className = "text-left py-2 px-4 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg text-sm transition-colors whitespace-nowrap";
+                renderAdminLinks();
+            }
+        }
 
         function showError(msg) {
             const errDiv = document.getElementById('login-error');
@@ -325,351 +381,290 @@
 
         function isKeyExpired(key) {
             if (key.lifespan === 'unlimited') return false;
-            if (key.status === 'expired') return true; // Cờ cưỡng bức
-            
-            const createdAtMs = key.createdAtMs;
+            if (key.status === 'expired') return true; 
             const lifespanMs = parseInt(key.lifespan) * 60 * 1000;
-            return Date.now() > (createdAtMs + lifespanMs);
+            return Date.now() > (key.createdAtMs + lifespanMs);
         }
 
-        // -- STREAMING_CHUNK:Xử lý Đăng nhập & Tải xuống --
-        window.validateKey = function() {
-            if (!isAuthReady) {
-                return showError("Hệ thống đang kết nối, vui lòng chờ trong giây lát...");
+        function startIdleTimer() {
+            if (downloadTimeout) clearTimeout(downloadTimeout);
+            
+            // UI effect cho thanh bar đỏ (đếm lùi 1 phút)
+            const bar = document.getElementById('timeout-bar');
+            bar.style.transition = 'none'; bar.style.transform = 'scaleX(1)';
+            setTimeout(() => {
+                bar.style.transition = 'transform 60s linear';
+                bar.style.transform = 'scaleX(0)';
+            }, 50);
+
+            // Xử lý đá văng sau 60s
+            downloadTimeout = setTimeout(async () => {
+                if (currentActiveKeyCode && currentView === 'view-download') {
+                    showModal('Hết thời gian', 'Phiên thao tác 1 phút đã hết. Key đã tự động khóa để bảo mật.');
+                    await window.clientLogout();
+                }
+            }, 60000);
+        }
+
+        // Tính năng: Thoát Tab hoặc Đóng trình duyệt -> Tự động khóa Key
+        document.addEventListener('visibilitychange', async () => {
+            if (document.visibilityState === 'hidden' && currentActiveKeyCode && currentView === 'view-download') {
+                const codeToLock = currentActiveKeyCode;
+                currentActiveKeyCode = null; // Tránh loop
+                if (downloadTimeout) clearTimeout(downloadTimeout);
+                switchView('view-login');
+                try {
+                    // Cưỡng chế đánh dấu khóa vĩnh viễn trên Database
+                    await setDoc(doc(db, 'keys', codeToLock), { status: 'locked' }, { merge: true });
+                } catch (e) {}
             }
+        });
 
-            const inputEl = document.getElementById('user-key-input');
-            const userKey = inputEl.value.trim().toUpperCase();
+        window.validateKey = async function() {
+            if (!isAuthReady) return showError("Hệ thống đang kết nối...");
+            const userKey = document.getElementById('user-key-input').value.trim().toUpperCase();
+            if (!userKey) return showError('Vui lòng nhập mã Key.');
 
-            if (!userKey) {
-                return showError('Vui lòng nhập mã Key.');
-            }
-
-            // Đăng nhập ADMIN
             if (userKey === ADMIN_SECRET) {
-                inputEl.value = '';
-                switchView('view-admin');
-                return;
+                document.getElementById('user-key-input').value = '';
+                switchView('view-admin'); return;
             }
 
-            // Đăng nhập CLIENT (Tìm key trong bộ nhớ đã đồng bộ)
             let key = localKeys.find(k => k.code === userKey);
+            if (!key) return showError('Key không tồn tại.');
+            if (isKeyExpired(key)) return showError('Key đã hết hạn sử dụng.');
+            if (key.status === 'locked') return showError('Key đã bị khoá. Vui lòng liên hệ Admin.');
+            if (key.status === 'in_use') return showError('Key đang được sử dụng bởi một thiết bị khác.'); // Chống 2 máy
 
-            if (!key) {
-                return showError('Key không tồn tại.');
+            document.getElementById('user-key-input').value = '';
+            
+            try {
+                // Đánh dấu thiết bị đang chiếm dụng Key
+                await setDoc(doc(db, 'keys', key.code), { status: 'in_use' }, { merge: true });
+                currentActiveKeyCode = key.code;
+                switchView('view-download');
+                startIdleTimer();
+            } catch (e) {
+                showError('Lỗi mạng. Không thể xác thực.');
             }
-
-            if (isKeyExpired(key)) {
-                return showError('Key đã hết hạn sử dụng.');
-            }
-
-            if (key.status === 'locked') {
-                return showError('Key đã được sử dụng vui lòng liên hệ chủ sở hữu để mở hoặc lấy key khác');
-            }
-
-            // Thành công
-            currentActiveKeyCode = key.code;
-            inputEl.value = '';
-            switchView('view-download');
         }
 
         window.logout = function() {
             currentActiveKeyCode = null;
+            if (downloadTimeout) clearTimeout(downloadTimeout);
             switchView('view-login');
         }
 
         window.clientLogout = async function() {
             if (currentActiveKeyCode && auth.currentUser) {
-                let keyData = localKeys.find(k => k.code === currentActiveKeyCode);
-                if (keyData) {
-                    try {
-                        const keyDocRef = doc(db, 'keys', keyData.code);
-                        // Cập nhật trạng thái thành locked
-                        await setDoc(keyDocRef, { ...keyData, status: 'locked' }, { merge: true });
-                    } catch (error) {
-                        console.error("Lỗi khi khóa key:", error);
-                    }
-                }
+                const code = currentActiveKeyCode;
+                currentActiveKeyCode = null;
+                try {
+                    await setDoc(doc(db, 'keys', code), { status: 'locked' }, { merge: true });
+                } catch (e) {}
             }
             window.logout();
         }
 
         window.mockDownload = async function() {
-            if(!currentActiveKeyCode || !auth.currentUser) return;
-
+            if(!currentActiveKeyCode) return;
             let keyData = localKeys.find(k => k.code === currentActiveKeyCode);
             
             if(keyData) {
-                // Kiểm tra chót trước khi cho tải
-                if (isKeyExpired(keyData)) {
-                    showModal('Lỗi', 'Key đã hết hạn sử dụng trong lúc bạn đang chờ.', false, () => {
-                        window.logout();
-                    });
-                    return;
-                }
+                if (isKeyExpired(keyData)) return window.clientLogout();
 
-                // Ghi nhận lịch sử lên Firebase
-                const newDownloadCount = (keyData.downloadCount || 0) + 1;
                 const timeString = new Date().toLocaleString('vi-VN', {
                     hour: '2-digit', minute:'2-digit', second:'2-digit',
                     day: '2-digit', month: '2-digit', year: 'numeric'
                 });
                 
-                const newHistory = [...(keyData.downloadHistory || [])];
-                newHistory.unshift(timeString);
-
                 try {
-                    // Update document in Firestore
-                    const keyDocRef = doc(db, 'keys', keyData.code);
-                    await setDoc(keyDocRef, {
-                        ...keyData,
-                        downloadCount: newDownloadCount,
-                        downloadHistory: newHistory
+                    // Update lịch sử
+                    await setDoc(doc(db, 'keys', keyData.code), {
+                        downloadCount: (keyData.downloadCount || 0) + 1,
+                        downloadHistory: [timeString, ...(keyData.downloadHistory || [])]
                     }, { merge: true });
 
-                    // Tiến hành chuyển hướng tải thực tế với link mới đã được URL Encode
-                    window.location.href = "itms-services://?action=download-manifest&url=https%3A%2F%2Fdl.3u.com%2Fplist%2F2025%2F09%2F28%2F1759023053890_915700.plist";
-                } catch(error) {
-                    console.error("Lỗi khi ghi lịch sử:", error);
-                    showModal('Lỗi hệ thống', 'Có lỗi xảy ra khi kết nối máy chủ. Vui lòng thử lại.');
+                    // Tìm Link cài đặt đang kích hoạt
+                    let activeLinkObj = (globalSettings.links || []).find(l => l.id === globalSettings.activeLinkId);
+                    let finalUrl = activeLinkObj ? activeLinkObj.url : "itms-services://?action=download-manifest&url=https%3A%2F%2Fdl.3u.com%2Fplist%2F2025%2F09%2F28%2F1759023053890_915700.plist";
+
+                    // Chuyển hướng Safari tải App
+                    window.location.href = finalUrl;
+                    
+                    // Sự kiện này sẽ làm Safari ẩn đi (hiện popup iOS cài đặt) -> Event visibilitychange sẽ tự chớp để Khóa Key ngay lập tức!
+                } catch(e) {
+                    showModal('Lỗi', 'Không thể kết nối máy chủ.');
                 }
             }
-        }
-
-        // -- STREAMING_CHUNK:Tính năng Admin Quản trị Firebase --
-        function generateRandomString(length) {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let result = '';
-            for (let i = 0; i < length; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return result;
         }
 
         window.generateNewKey = async function() {
             if (!auth.currentUser) return;
-
-            const newCode = `KEY-${generateRandomString(4)}-${generateRandomString(4)}`;
-            const lifespan = document.getElementById('key-lifespan').value;
+            const newCode = `KEY-` + Math.random().toString(36).substr(2,4).toUpperCase() + `-` + Math.random().toString(36).substr(2,4).toUpperCase();
             
-            const newKeyRecord = {
-                code: newCode,
-                createdAt: new Date().toLocaleString('vi-VN'),
-                createdAtMs: Date.now(),
-                lifespan: lifespan,
-                status: 'active',
-                downloadCount: 0,
-                downloadHistory: []
-            };
-
             try {
-                // Tạo mới Document trên Firestore, ID = code của Key
-                const keyDocRef = doc(db, 'keys', newCode);
-                await setDoc(keyDocRef, newKeyRecord);
-                // Không cần render thủ công, onSnapshot sẽ tự kích hoạt renderAdminKeys
-            } catch (error) {
-                console.error("Lỗi tạo key:", error);
-                showModal('Lỗi', 'Không thể tạo Key do lỗi mạng.');
-            }
+                await setDoc(doc(db, 'keys', newCode), {
+                    code: newCode,
+                    createdAt: new Date().toLocaleString('vi-VN'),
+                    createdAtMs: Date.now(),
+                    lifespan: document.getElementById('key-lifespan').value,
+                    status: 'active',
+                    downloadCount: 0, downloadHistory: []
+                });
+            } catch (e) { showModal('Lỗi', 'Không thể tạo Key.'); }
         }
 
         window.deleteKey = function(code) {
-            showModal('Xóa Key', `Bạn có chắc muốn xóa vĩnh viễn mã ${code} không?`, true, async () => {
-                if (!auth.currentUser) return;
-                try {
-                    const keyDocRef = doc(db, 'keys', code);
-                    await deleteDoc(keyDocRef);
-                } catch (error) {
-                    console.error("Lỗi xóa key:", error);
-                    showModal('Lỗi', 'Không thể xóa Key.');
-                }
+            showModal('Xóa Key', `Chắc chắn xóa vĩnh viễn ${code}?`, true, async () => {
+                try { await deleteDoc(doc(db, 'keys', code)); } catch (e) {}
             });
         }
 
         window.unlockKey = function(code) {
-            showModal('Phê duyệt Key', `Xác nhận phê duyệt cho mã ${code} được phép sử dụng lại?`, true, async () => {
-                if (!auth.currentUser) return;
-                try {
-                    let keyData = localKeys.find(k => k.code === code);
-                    if (keyData) {
-                        const keyDocRef = doc(db, 'keys', code);
-                        // Cập nhật trạng thái lại thành active
-                        await setDoc(keyDocRef, { ...keyData, status: 'active' }, { merge: true });
-                    }
-                } catch (error) {
-                    console.error("Lỗi mở khóa:", error);
-                    showModal('Lỗi', 'Không thể phê duyệt Key.');
-                }
+            showModal('Phê duyệt Key', `Cho phép ${code} sử dụng lại?`, true, async () => {
+                try { await setDoc(doc(db, 'keys', code), { status: 'active' }, { merge: true }); } catch (e) {}
             });
-        }
-
-        window.copyKey = async function(text) {
-            try {
-                if (navigator.clipboard && window.isSecureContext) {
-                    await navigator.clipboard.writeText(text);
-                    showModal('Thành công', 'Đã copy mã: ' + text);
-                } else {
-                    fallbackCopyTextToClipboard(text);
-                }
-            } catch (err) {
-                console.error("Lỗi copy: ", err);
-                fallbackCopyTextToClipboard(text);
-            }
-        };
-
-        function fallbackCopyTextToClipboard(text) {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            
-            // Tránh cuộn trang khi tạo thẻ textarea ẩn
-            textArea.style.top = "0";
-            textArea.style.left = "0";
-            textArea.style.position = "fixed";
-
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-
-            try {
-                const successful = document.execCommand('copy');
-                if (successful) showModal('Thành công', 'Đã copy: ' + text);
-                else showModal('Chú ý', 'Trình duyệt không hỗ trợ copy. Vui lòng bôi đen thủ công: ' + text);
-            } catch (err) {
-                showModal('Chú ý', 'Vui lòng bôi đen thủ công để copy: ' + text);
-            }
-            document.body.removeChild(textArea);
-        }
-
-        // -- STREAMING_CHUNK:UI Lịch sử và Render Admin --
-        window.showHistory = function(code) {
-            const key = localKeys.find(k => k.code === code);
-            if(!key) return;
-
-            document.getElementById('history-key-code').innerText = key.code;
-            const listEl = document.getElementById('history-list');
-            const emptyEl = document.getElementById('history-empty');
-            
-            listEl.innerHTML = '';
-            const history = key.downloadHistory || [];
-            
-            if(history.length === 0) {
-                listEl.classList.add('hidden');
-                emptyEl.classList.remove('hidden');
-            } else {
-                listEl.classList.remove('hidden');
-                emptyEl.classList.add('hidden');
-                history.forEach(time => {
-                    const li = document.createElement('li');
-                    li.className = 'py-3 border-b border-gray-100 flex items-center bg-white rounded hover:bg-gray-50 transition-colors';
-                    li.innerHTML = `
-                        <div class="w-2 h-2 bg-green-500 rounded-full mr-3 shadow-[0_0_5px_rgba(34,197,94,0.5)]"></div>
-                        <span class="font-medium text-gray-700">${time.split(' ')[1]}</span>
-                        <span class="ml-2 text-gray-400 text-xs">${time.split(' ')[0]}</span>
-                    `;
-                    listEl.appendChild(li);
-                });
-            }
-
-            const modal = document.getElementById('history-modal');
-            const modalContent = document.getElementById('history-modal-content');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            void modal.offsetWidth; // Reflow
-            modal.classList.remove('opacity-0');
-            modalContent.classList.remove('scale-95');
-        }
-
-        window.closeHistory = function() {
-            const modal = document.getElementById('history-modal');
-            const modalContent = document.getElementById('history-modal-content');
-            modal.classList.add('opacity-0');
-            modalContent.classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }, 300);
         }
 
         function renderAdminKeys() {
             const tbody = document.getElementById('keys-table-body');
-            const emptyState = document.getElementById('empty-state');
-            const loadingState = document.getElementById('loading-state');
-            
-            loadingState.classList.add('hidden'); // Đã load xong
             tbody.innerHTML = '';
             
             if (localKeys.length === 0) {
-                tbody.parentNode.classList.add('hidden');
-                emptyState.classList.remove('hidden');
+                tbody.innerHTML = `<tr><td colspan="4" class="px-4 py-8 text-center text-gray-500">Chưa có mã Key nào.</td></tr>`;
                 return;
             }
-            
-            tbody.parentNode.classList.remove('hidden');
-            emptyState.classList.add('hidden');
 
             localKeys.forEach(key => {
                 const isExp = isKeyExpired(key);
+                let badge = '';
                 
-                // Trạng thái badge
-                let statusBadge = '';
-                if (isExp) {
-                    statusBadge = `<span class="px-2.5 py-0.5 inline-flex text-[11px] leading-4 font-bold rounded bg-red-100 text-red-700 border border-red-200">Hết hạn</span>`;
-                } else if (key.status === 'locked') {
-                    statusBadge = `<span class="px-2.5 py-0.5 inline-flex text-[11px] leading-4 font-bold rounded bg-yellow-100 text-yellow-700 border border-yellow-200">Bị khóa (Đã thoát)</span>`;
-                } else {
-                    statusBadge = `<span class="px-2.5 py-0.5 inline-flex text-[11px] leading-4 font-bold rounded bg-green-100 text-green-700 border border-green-200">Hoạt động</span>`;
-                }
+                if (isExp) badge = `<span class="px-2 py-0.5 inline-flex text-[11px] font-bold rounded bg-red-100 text-red-700">Hết hạn</span>`;
+                else if (key.status === 'locked') badge = `<span class="px-2 py-0.5 inline-flex text-[11px] font-bold rounded bg-yellow-100 text-yellow-700">Bị khóa</span>`;
+                else if (key.status === 'in_use') badge = `<span class="px-2 py-0.5 inline-flex items-center text-[11px] font-bold rounded bg-blue-100 text-blue-700"><span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse mr-1"></span>Đang sử dụng</span>`;
+                else badge = `<span class="px-2 py-0.5 inline-flex text-[11px] font-bold rounded bg-green-100 text-green-700">Hoạt động</span>`;
 
-                // Xử lý text thời gian sống
-                let lifespanText = 'Không giới hạn';
-                if(key.lifespan !== 'unlimited') {
-                    let mins = parseInt(key.lifespan);
-                    if(mins >= 1440) lifespanText = (mins/1440) + ' Ngày';
-                    else if(mins >= 60) lifespanText = (mins/60) + ' Giờ';
-                    else lifespanText = mins + ' Phút';
-                }
+                let lifespan = key.lifespan === 'unlimited' ? 'Vĩnh viễn' : (key.lifespan >= 60 ? (key.lifespan/60)+' Giờ' : key.lifespan+' Phút');
 
-                // Cảnh báo màu nền nếu hết hạn hoặc bị khóa
-                const trClass = isExp ? "bg-red-50/30 hover:bg-red-50/50 transition-colors" : 
-                                (key.status === 'locked' ? "bg-yellow-50/30 hover:bg-yellow-50/50 transition-colors" : "hover:bg-gray-50 transition-colors");
-
-                // Hành động
-                let actionsHtml = `
-                    <button onclick="window.copyKey('${key.code}')" class="text-blue-600 hover:text-blue-900 bg-white border border-gray-200 hover:bg-blue-50 px-3 py-1.5 rounded-lg shadow-sm transition-all mr-1">Copy</button>
-                    <button onclick="window.deleteKey('${key.code}')" class="text-red-600 hover:text-red-900 bg-white border border-gray-200 hover:bg-red-50 px-3 py-1.5 rounded-lg shadow-sm transition-all">Xóa</button>
+                let actions = `
+                    <button onclick="window.copyToClipboard('${key.code}')" class="text-blue-600 bg-white border border-gray-200 hover:bg-blue-50 px-3 py-1.5 rounded-lg shadow-sm mr-1">Copy</button>
+                    <button onclick="window.deleteKey('${key.code}')" class="text-red-600 bg-white border border-gray-200 hover:bg-red-50 px-3 py-1.5 rounded-lg shadow-sm">Xóa</button>
                 `;
-
-                // Hiện nút Phê duyệt nếu key bị khóa và chưa hết thời hạn
-                if (key.status === 'locked' && !isExp) {
-                    actionsHtml = `<button onclick="window.unlockKey('${key.code}')" class="text-yellow-700 hover:text-yellow-900 bg-white border border-yellow-300 hover:bg-yellow-50 px-3 py-1.5 rounded-lg shadow-sm transition-all mr-1 font-bold">Phê duyệt</button>` + actionsHtml;
+                if ((key.status === 'locked' || key.status === 'in_use') && !isExp) {
+                    actions = `<button onclick="window.unlockKey('${key.code}')" class="text-yellow-700 bg-white border border-yellow-300 hover:bg-yellow-50 px-3 py-1.5 rounded-lg shadow-sm mr-1 font-bold">Mở Khóa</button>` + actions;
                 }
 
                 const tr = document.createElement('tr');
-                tr.className = trClass;
                 tr.innerHTML = `
-                    <td class="px-4 py-3.5 whitespace-nowrap">
-                        <div class="font-mono text-[13px] text-gray-900 font-bold mb-1">${key.code}</div>
-                        <div>${statusBadge}</div>
-                    </td>
-                    <td class="px-4 py-3.5 whitespace-nowrap text-xs text-gray-500">
-                        <div class="mb-1 flex items-center gap-1">
-                            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            ${key.createdAt.split(' ')[1] || key.createdAt}
-                        </div>
-                        <div class="${isExp ? 'text-red-500' : 'text-blue-600'} font-medium flex items-center gap-1">
-                            Sống: ${lifespanText}
-                        </div>
-                    </td>
-                    <td class="px-4 py-3.5 whitespace-nowrap text-center">
-                        <div class="text-xl font-black text-gray-800">${key.downloadCount || 0}</div>
-                        <button onclick="window.showHistory('${key.code}')" class="text-[11px] font-semibold text-blue-600 hover:text-blue-800 underline-offset-2 hover:underline mt-1 bg-blue-50 px-2 py-0.5 rounded">Chi tiết tải</button>
-                    </td>
-                    <td class="px-4 py-3.5 whitespace-nowrap text-right text-sm font-medium">
-                        ${actionsHtml}
+                    <td class="px-4 py-3 border-b"><div class="font-mono font-bold mb-1">${key.code}</div><div>${badge}</div></td>
+                    <td class="px-4 py-3 border-b text-xs"><div class="mb-1 text-gray-500">${key.createdAt.split(' ')[1]}</div><div class="${isExp?'text-red-500':'text-blue-600'} font-medium">Sống: ${lifespan}</div></td>
+                    <td class="px-4 py-3 border-b text-center font-bold text-lg">${key.downloadCount || 0}</td>
+                    <td class="px-4 py-3 border-b text-right text-sm">${actions}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.addNewLink = async function() {
+            const name = document.getElementById('new-link-name').value.trim();
+            const url = document.getElementById('new-link-url').value.trim();
+            if(!name || !url) return showModal('Lỗi', 'Nhập đủ tên và link.');
+            
+            let newLink = { id: 'link-' + Date.now(), name, url };
+            let newSettings = { ...globalSettings };
+            newSettings.links = [...(newSettings.links || []), newLink];
+            if(!newSettings.activeLinkId) newSettings.activeLinkId = newLink.id;
+            
+            await setDoc(doc(db, 'settings', 'download_config'), newSettings);
+            document.getElementById('new-link-name').value = ''; document.getElementById('new-link-url').value = '';
+        }
+
+        window.deleteLinkConfig = function(id) {
+            showModal('Xóa', 'Xóa link dự phòng này?', true, async () => {
+                let s = { ...globalSettings };
+                s.links = s.links.filter(l => l.id !== id);
+                if(s.activeLinkId === id) s.activeLinkId = s.links[0]?.id || null;
+                await setDoc(doc(db, 'settings', 'download_config'), s);
+            });
+        }
+
+        window.setActiveLink = async function(id) {
+            let s = { ...globalSettings }; s.activeLinkId = id;
+            await setDoc(doc(db, 'settings', 'download_config'), s);
+        }
+
+        window.openEditLink = function(id) {
+            const link = globalSettings.links.find(l => l.id === id);
+            if(!link) return;
+            document.getElementById('edit-link-id').value = link.id;
+            document.getElementById('edit-link-name').value = link.name;
+            document.getElementById('edit-link-url').value = link.url;
+            
+            const modal = document.getElementById('edit-link-modal');
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0'); document.getElementById('edit-link-content').classList.remove('scale-95');
+        }
+
+        window.closeEditLink = function() {
+            document.getElementById('edit-link-modal').classList.add('opacity-0');
+            document.getElementById('edit-link-content').classList.add('scale-95');
+            setTimeout(() => document.getElementById('edit-link-modal').classList.add('hidden'), 200);
+        }
+
+        window.saveEditLink = async function() {
+            const id = document.getElementById('edit-link-id').value;
+            const name = document.getElementById('edit-link-name').value.trim();
+            const url = document.getElementById('edit-link-url').value.trim();
+            if(!name || !url) return;
+            
+            let s = { ...globalSettings };
+            let idx = s.links.findIndex(l => l.id === id);
+            if(idx > -1) {
+                s.links[idx] = { id, name, url };
+                await setDoc(doc(db, 'settings', 'download_config'), s);
+                window.closeEditLink();
+            }
+        }
+
+        function renderAdminLinks() {
+            const tbody = document.getElementById('links-table-body');
+            tbody.innerHTML = '';
+            const links = globalSettings.links || [];
+            
+            if (links.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="px-4 py-8 text-center text-gray-500">Chưa có link nào.</td></tr>`; return;
+            }
+            
+            links.forEach(link => {
+                const isActive = link.id === globalSettings.activeLinkId;
+                const status = isActive ? `<span class="px-2 py-1 bg-green-100 text-green-700 text-[11px] font-bold rounded">ĐANG DÙNG</span>` : `<span class="px-2 py-1 bg-gray-100 text-gray-600 text-[11px] font-bold rounded">DỰ PHÒNG</span>`;
+                
+                const btnUse = isActive ? `<button disabled class="text-gray-400 bg-gray-50 border px-3 py-1.5 rounded-lg mr-1 cursor-not-allowed">Đã chọn</button>`
+                                        : `<button onclick="window.setActiveLink('${link.id}')" class="text-blue-600 font-bold bg-white border border-blue-200 hover:bg-blue-50 px-3 py-1.5 rounded-lg shadow-sm mr-1">Dùng Link này</button>`;
+
+                const tr = document.createElement('tr');
+                tr.className = isActive ? "bg-green-50/30" : "hover:bg-gray-50";
+                tr.innerHTML = `
+                    <td class="px-4 py-4 font-bold text-sm border-b">${link.name}</td>
+                    <td class="px-4 py-4 border-b"><div class="text-xs font-mono text-gray-500 truncate max-w-[200px]" title="${link.url}">${link.url}</div></td>
+                    <td class="px-4 py-4 text-center border-b">${status}</td>
+                    <td class="px-4 py-4 text-right text-sm border-b whitespace-nowrap">
+                        ${btnUse}
+                        <button onclick="window.openEditLink('${link.id}')" class="text-yellow-600 bg-white border border-gray-200 hover:bg-yellow-50 px-3 py-1.5 rounded-lg shadow-sm mr-1">Sửa</button>
+                        <button onclick="window.deleteLinkConfig('${link.id}')" class="text-red-600 bg-white border border-gray-200 hover:bg-red-50 px-3 py-1.5 rounded-lg shadow-sm" ${isActive?'disabled':''}>Xóa</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
+        }
+
+        window.copyToClipboard = function(text) {
+            const el = document.createElement("textarea");
+            el.value = text; document.body.appendChild(el); el.select();
+            document.execCommand('copy'); document.body.removeChild(el);
+            showModal('Thành công', 'Đã copy: ' + text);
         }
     </script>
 </body>
